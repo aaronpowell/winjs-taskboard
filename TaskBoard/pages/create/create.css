@@ -1,0 +1,16 @@
+﻿.create section[role=main] {
+    -ms-grid-row: 2;
+}
+
+.create form fieldset {
+	border: none;
+}
+
+.create form fieldset label {
+	display: inline-block;
+	width: 200px;
+}
+
+.create textarea {
+	height: 150px;
+}

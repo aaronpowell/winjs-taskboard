@@ -1,13 +1,14 @@
 ﻿(function () {
     "use strict";
+    var nav = WinJS.Navigation;
 
     WinJS.UI.Pages.define("/pages/overview/index.html", {
         ready: function (element) {
-            var req = window.indexedDB.open('task-board');
+            var req = window.indexedDB.open('task-board', 2);
             req.onupgradeneeded = function (e) {
                 var db = e.target.result;
-
-                db.createObjectStore('task', { keyPath: 'id' });
+                
+                db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
             };
 
             req.onsuccess = function (e) {
@@ -21,6 +22,12 @@
                         
                         if(diff <= 0) {
                             return item.key = 'Overdue';
+                        }
+                        if (diff >= 1 && diff <= 3) {
+                            return item.key = 'Soon';
+                        }
+                        if(diff >= 4 && diff <= 7) {
+                            return item.key = 'End of the week';
                         }
                         return item.key = 'Coming up';
                    }, function(item) {
@@ -39,13 +46,6 @@
                     itemDataSource: groupList.dataSource,
                     groupDataSource: groupList.groups.dataSource
                 });
-                list.push({
-                    id: 0,
-                    title: 'foo',
-                    description: 'bar',
-                    due: new Date(),
-                    completed: false
-                });
 
                 var transaction = db.transaction('task');
                 var store = transaction.objectStore('task');
@@ -58,6 +58,19 @@
                     }
                 };
             };
+
+            var cmd = new WinJS.UI.AppBarCommand(document.createElement('button'));
+            WinJS.UI.setOptions(cmd, {
+                icon: WinJS.UI.AppBarIcon.add,
+                label: 'Add'
+            });
+            
+            cmd.element.addEventListener('click', function(e) {
+                e.preventDefault();
+                nav.navigate('/pages/create/create.html');
+            }, false);
+
+            document.getElementById('appbar').winControl.commands = [cmd];
         },
 
         unload: function () {

@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>index</title>
+
+    <!-- WinJS references -->
+    <link href="//Microsoft.WinJS.1.0/css/ui-dark.css" rel="stylesheet" />
+    <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
+    <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
+
+    <link href="create.css" rel="stylesheet" />
+    <script src="create.js"></script>
+</head>
+<body>
+    <div class="create fragment">
+        <header aria-label="Header content" role="banner">
+            <button class="win-backbutton" aria-label="Back" disabled type="button"></button>
+            <h1 class="titlearea win-type-ellipsis">
+                <span class="pagetitle">Create Task</span>
+            </h1>
+        </header>
+        <section aria-label="Main content" role="main">
+            <form>
+                <fieldset>
+                    <legend>Details</legend>
+
+                    <div>
+                        <label for="title">Title</label>
+                        <input type="text" value="" id="title" />
+                    </div>
+                    <div>
+                        <label for="desc">Description</label>
+                        <textarea name="desc" id="desc"></textarea>
+                    </div>
+                    <div>
+                        <label for="due">Due Date</label>
+                        <div id="due" data-win-control="WinJS.UI.DatePicker"></div>
+                    </div>
+                    <div>
+                        <div id="completed" data-win-control="WinJS.UI.ToggleSwitch" data-win-options="{title: 'Completed', labelOff: 'Nope', labelOn: 'Yep'}"></div>
+                    </div>
+                    <div>
+                        <button>Save</button>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+    </div>
+</body>
+</html>
