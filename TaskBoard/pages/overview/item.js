@@ -13,7 +13,7 @@
             element.querySelector('form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                var req = indexedDB.open('task-board');
+                var req = indexedDB.open('task-board', 2);
                 req.onsuccess = function (e) {
                     var db = e.target.result;
                     var transaction = db.transaction('task', 'readwrite');
