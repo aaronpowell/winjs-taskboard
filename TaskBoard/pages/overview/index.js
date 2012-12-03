@@ -44,7 +44,14 @@
                     groupHeaderTemplate: element.querySelector('.headertemplate'),
                     itemTemplate: element.querySelector('.itemtemplate'),
                     itemDataSource: groupList.dataSource,
-                    groupDataSource: groupList.groups.dataSource
+                    groupDataSource: groupList.groups.dataSource,
+                    selectionMode: WinJS.UI.SelectionMode.single,
+                    oniteminvoked: function (e) {
+                        var index = e.detail.itemIndex;
+                        var item = groupList.getAt(index);
+
+                        nav.navigate('/pages/overview/item.html', { item: item });
+                    }
                 });
 
                 var transaction = db.transaction('task');

@@ -68,6 +68,9 @@
     <Content Include="pages\overview\index.css" />
     <Content Include="pages\overview\index.html" />
     <Content Include="pages\overview\index.js" />
+    <Content Include="pages\overview\item.css" />
+    <Content Include="pages\overview\item.html" />
+    <Content Include="pages\overview\item.js" />
     <None Include="TaskBoard_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

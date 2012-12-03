@@ -2,22 +2,22 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>index</title>
+    <title>item</title>
 
     <!-- WinJS references -->
     <link href="//Microsoft.WinJS.1.0/css/ui-dark.css" rel="stylesheet" />
     <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
     <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
 
-    <link href="create.css" rel="stylesheet" />
-    <script src="create.js"></script>
+    <link href="item.css" rel="stylesheet" />
+    <script src="item.js"></script>
 </head>
 <body>
-    <div class="create fragment">
+    <div class="item fragment">
         <header aria-label="Header content" role="banner">
             <button class="win-backbutton" aria-label="Back" disabled type="button"></button>
             <h1 class="titlearea win-type-ellipsis">
-                <span class="pagetitle">Create Task</span>
+                <span class="pagetitle" data-win-bind="innerHTML: title"></span>
             </h1>
         </header>
         <section aria-label="Main content" role="main">
@@ -27,11 +27,11 @@
 
                     <div>
                         <label for="title">Title</label>
-                        <input type="text" value="" id="title" />
+                        <input type="text" value="" id="title" data-win-bind="value: title" />
                     </div>
                     <div>
                         <label for="desc">Description</label>
-                        <textarea name="desc" id="desc"></textarea>
+                        <textarea name="desc" id="desc" data-win-bind="value: description"></textarea>
                     </div>
                     <div>
                         <label for="due">Due Date</label>

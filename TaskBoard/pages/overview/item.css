@@ -1,23 +1,19 @@
-﻿.create section[role=main] {
-    -ms-grid-row: 2;
-}
-
-.create form {
+﻿.item form {
     margin-bottom: 60px;
     margin-left: 45px;
     margin-right: 115px;
     margin-top: 28px;
 }
 
-    .create form fieldset {
+    .item form fieldset {
         border: none;
     }
 
-        .create form fieldset label {
+        .item form fieldset label {
             display: inline-block;
             width: 200px;
         }
 
-.create textarea {
+.item textarea {
     height: 150px;
 }
