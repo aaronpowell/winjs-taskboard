@@ -15,6 +15,23 @@
             if (app.sessionState.history) {
                 nav.history = app.sessionState.history;
             }
+            if (args.detail.arguments) {
+                var tileArg = JSON.parse(args.detail.arguments);
+
+                var req = window.indexedDB.open('task-board', 3);
+
+                req.onsuccess = function (e) {
+                    var db = e.target.result;
+
+                    var transaction = db.transaction('task');
+                    var store = transaction.objectStore('task');
+                    store.get(tileArg.id).onsuccess = function (e) {
+                        nav.navigate('/pages/overview/item.html', {
+                             item: e.target.result
+                        });
+                    };
+                };
+            }
             args.setPromise(WinJS.UI.processAll().then(function () {
                 if (nav.location) {
                     nav.history.current.initialPlaceholder = true;
@@ -25,7 +42,7 @@
             }));
         }
     };
-    
+
     app.oncheckpoint = function (args) {
         app.sessionState.history = nav.history;
     };

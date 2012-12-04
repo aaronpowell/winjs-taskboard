@@ -146,6 +146,42 @@
                 }
             });
             commands.push(cmd);
+            
+            cmd = document.getElementById('pinCommand').winControl;
+            WinJS.UI.setOptions(cmd, {
+                icon: WinJS.UI.AppBarIcon.pin,
+                id: 'pin',
+                label: 'Pin',
+                onclick: function () {
+                    var list = element.querySelector('.list').winControl;
+                    var item = list.currentItem;
+                    item = list.itemDataSource.list.getAt(item.index);
+                    item.pinned = true;
+
+                    var req = indexedDB.open('task-board', 3);
+                    req.onsuccess = function (e) {
+                        var db = e.target.result;
+
+                        var transaction = db.transaction('task', 'readwrite');
+                        var store = transaction.objectStore('task');
+
+                        store.put(item).onsuccess = function () {
+                            var tile = new Windows.UI.StartScreen.SecondaryTile('item.' + item.id);
+                            
+                            tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
+                            tile.backgroundColor = Windows.UI.Colors.red;
+                            tile.shortName = tile.displayName = item.title;
+                            tile.arguments = JSON.stringify({
+                                id: item.id
+                            });
+                            tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
+
+                            tile.requestCreateAsync();
+                        };
+                    };
+                }
+            });
+            commands.push(cmd);
 
             document.getElementById('appbar').winControl.hideCommands(commands.filter(function (cmd) {
                  return cmd.section === 'selection';
