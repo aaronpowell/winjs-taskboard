@@ -27,7 +27,7 @@
                     var store = transaction.objectStore('task');
                     store.get(tileArg.id).onsuccess = function (e) {
                         nav.navigate('/pages/overview/item.html', {
-                             item: e.target.result
+                            item: e.target.result
                         });
                     };
                 };

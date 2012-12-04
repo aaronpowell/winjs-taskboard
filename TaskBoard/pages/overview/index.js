@@ -192,14 +192,38 @@
                             if (item.pinned) {
 
                                 tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
-                                tile.backgroundColor = Windows.UI.Colors.red;
+                                tile.backgroundColor = Windows.UI.Colors.darkRed;
                                 tile.shortName = tile.displayName = item.title;
                                 tile.arguments = JSON.stringify({
                                     id: item.id
                                 });
                                 tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
+                                
+                                tile.requestCreateAsync()/*.then(function () {
+                                    var notifications = Windows.UI.Notifications;
+                                    
+                                    var tileXml = notifications.TileUpdateManager.getTemplateContent(notifications.TileTemplateType.tileWideText01);
+                                    var tileTextAttributes = tileXml.getElementsByTagName("text");
+                                    tileTextAttributes[0].appendChild(tileXml.createTextNode(item.title));
+                                    tileTextAttributes[1].appendChild(tileXml.createTextNode(item.description));
+                                    tileTextAttributes[2].appendChild(tileXml.createTextNode('Due date: ' + TaskBoard.binding.friendlyDate(item.due)));
 
-                                tile.requestCreateAsync();
+                                    // Provide a square version of the notification.
+                                    var squareTileXml = notifications.TileUpdateManager.getTemplateContent(notifications.TileTemplateType.tileSquareText01);
+                                    var squareTileTextAttributes = squareTileXml.getElementsByTagName("text");
+                                    squareTileTextAttributes[0].appendChild(tileXml.createTextNode(item.title));
+                                    squareTileTextAttributes[1].appendChild(tileXml.createTextNode(item.description));
+                                    squareTileTextAttributes[2].appendChild(tileXml.createTextNode('Due date: ' + TaskBoard.binding.friendlyDate(item.due)));
+
+                                    // Add the square tile to the notification.
+                                    var node = tileXml.importNode(squareTileXml.getElementsByTagName("binding").item(0), true);
+                                    tileXml.getElementsByTagName("visual").item(0).appendChild(node);
+
+                                    var tileNotification = new notifications.TileNotification(tileXml);
+
+                                    var tileUpdater = notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(tile.tileId);
+                                    tileUpdater.update(tileNotification);
+                                })*/;
                             } else {
                                 tile.requestDeleteAsync();
                             }
