@@ -8,7 +8,7 @@
             element.querySelector('form').addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                var req = indexedDB.open('task-board', 2);
+                var req = indexedDB.open('task-board', 3);
                 req.onsuccess = function (e) {
                     var db = e.target.result;
                     var transaction = db.transaction('task', 'readwrite');
@@ -19,6 +19,7 @@
                         description: element.querySelector('#desc').value,
                         due: element.querySelector('#due').winControl.current.getTime(),
                         completed: element.querySelector('#completed').winControl.checked,
+                        done: element.querySelector('#completed').winControl.checked ? 'yes' : 'no',
                         created: Date.now()
                     });
 

@@ -5,11 +5,13 @@
 
     WinJS.UI.Pages.define("/pages/overview/index.html", {
         ready: function (element) {
-            var req = window.indexedDB.open('task-board', 2);
+            var req = window.indexedDB.open('task-board', 3);
             req.onupgradeneeded = function (e) {
                 var db = e.target.result;
 
-                db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
+                var store = db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
+
+                store.createIndex('done', 'done', { unique: false });
             };
 
             req.onsuccess = function (e) {
@@ -50,7 +52,7 @@
                     onselectionchanged: function (e) {
                         var selectedItems = e.target.winControl.selection;
                         var appbar = element.querySelector('#appbar').winControl;
-                        if(selectedItems.count()) {
+                        if (selectedItems.count()) {
                             appbar.showCommands(commands.filter(function (cmd) { return cmd.section === 'selection'; }));
                             appbar.sticky = true;
                             appbar.show();
@@ -70,8 +72,9 @@
 
                 var transaction = db.transaction('task');
                 var store = transaction.objectStore('task');
+                var index = store.index('done');
 
-                store.openCursor().onsuccess = function (e) {
+                index.openCursor(IDBKeyRange.only('no')).onsuccess = function (e) {
                     var cursor = e.target.result;
                     if (cursor) {
                         list.push(cursor.value);
@@ -80,70 +83,73 @@
                 };
             };
 
-            commands.push(
-                new WinJS.UI.AppBarCommand(document.createElement('button'), {
-                    icon: WinJS.UI.AppBarIcon.add,
-                    label: 'Add',
-                    onclick: function(e) {
-                        e.preventDefault();
-                        nav.navigate('/pages/create/create.html');
-                    }
-                })
-            );
+            var cmd = document.getElementById('addCommand').winControl;
+            WinJS.UI.setOptions(cmd, {
+                icon: WinJS.UI.AppBarIcon.add,
+                id: 'add',
+                label: 'Add',
+                onclick: function (e) {
+                    e.preventDefault();
+                    nav.navigate('/pages/create/create.html');
+                }
+            });
+            commands.push(cmd);
 
-            commands.push(
-                new WinJS.UI.AppBarCommand(document.createElement('button'), {
-                    icon: WinJS.UI.AppBarIcon.delete,
-                    label: 'Delete',
-                    section: 'selection',
-                    onclick: function () {
-                        var list = element.querySelector('.list').winControl;
-                        var item = list.currentItem;
-                        item = list.itemDataSource.list.getAt(item.index);
-                        
-                        var req = indexedDB.open('task-board', 2);
-                        req.onsuccess = function (e) {
-                            var db = e.target.result;
+            cmd = document.getElementById('deleteCommand').winControl;
+            WinJS.UI.setOptions(cmd, {
+                icon: WinJS.UI.AppBarIcon.delete,
+                id: 'delete',
+                label: 'Delete',
+                onclick: function () {
+                    var list = element.querySelector('.list').winControl;
+                    var item = list.currentItem;
+                    item = list.itemDataSource.list.getAt(item.index);
 
-                            var transaction = db.transaction('task', 'readwrite');
-                            var store = transaction.objectStore('task');
+                    var req = indexedDB.open('task-board', 3);
+                    req.onsuccess = function (e) {
+                        var db = e.target.result;
 
-                            store.delete(item.id).onsuccess = function () {
-                                list.itemDataSource.remove(list.currentItem.key);
-                            };
+                        var transaction = db.transaction('task', 'readwrite');
+                        var store = transaction.objectStore('task');
+
+                        store.delete(item.id).onsuccess = function () {
+                            list.itemDataSource.remove(list.currentItem.key);
                         };
-                    }
-                })
-            );
+                    };
+                }
+            });
+            commands.push(cmd);
 
-            commands.push(
-                new WinJS.UI.AppBarCommand(document.createElement('button'), {
-                    icon: WinJS.UI.AppBarIcon.accept,
-                    label: 'Complete',
-                    section: 'selection',
-                    onclick: function () {
-                        var list = element.querySelector('.list').winControl;
-                        var item = list.currentItem;
-                        item = list.itemDataSource.list.getAt(item.index);
-                        item.completed = true;
-                        
-                        var req = indexedDB.open('task-board', 2);
-                        req.onsuccess = function(e) {
-                            var db = e.target.result;
+            cmd = document.getElementById('completeCommand').winControl;
+            WinJS.UI.setOptions(cmd, {
+                icon: WinJS.UI.AppBarIcon.accept,
+                id: 'complete',
+                label: 'Complete',
+                onclick: function () {
+                    var list = element.querySelector('.list').winControl;
+                    var item = list.currentItem;
+                    item = list.itemDataSource.list.getAt(item.index);
+                    item.completed = true;
+                    item.done = true;
 
-                            var transaction = db.transaction('task', 'readwrite');
-                            var store = transaction.objectStore('task');
+                    var req = indexedDB.open('task-board', 3);
+                    req.onsuccess = function (e) {
+                        var db = e.target.result;
 
-                            store.put(item).onsuccess = function() {
-                                list.itemDataSource.remove(list.currentItem.key);
-                            };
+                        var transaction = db.transaction('task', 'readwrite');
+                        var store = transaction.objectStore('task');
+
+                        store.put(item).onsuccess = function () {
+                            list.itemDataSource.remove(list.currentItem.key);
                         };
-                    }
-                })
-            );
-            document.getElementById('appbar').winControl.commands = commands;
+                    };
+                }
+            });
+            commands.push(cmd);
 
-            document.getElementById('appbar').winControl.hideCommands(commands.filter(function(cmd) { return cmd.section === 'selection'; }));
+            document.getElementById('appbar').winControl.hideCommands(commands.filter(function (cmd) {
+                 return cmd.section === 'selection';
+            }));
         },
 
         unload: function () {
