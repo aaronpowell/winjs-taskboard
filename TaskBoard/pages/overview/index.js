@@ -53,6 +53,24 @@
                         var selectedItems = e.target.winControl.selection;
                         var appbar = element.querySelector('#appbar').winControl;
                         if (selectedItems.count()) {
+                            if (selectedItems.count() === 1) {
+                                selectedItems.getItems().done(function (items) {
+                                    var item = items[0];
+                                    var pinned = commands.filter(function (cmd) { return cmd.id === 'pinCommand'; })[0];
+                                    if (item.data.pinned) {
+                                        WinJS.UI.setOptions(pinned, {
+                                            icon: WinJS.UI.AppBarIcon.unpin,
+                                            label: 'Unpin'
+                                        });
+                                    } else {
+                                        WinJS.UI.setOptions(pinned, {
+                                            icon: WinJS.UI.AppBarIcon.pin,
+                                            label: 'Pin'
+                                        });
+                                    }
+                                });
+                            }
+
                             appbar.showCommands(commands.filter(function (cmd) { return cmd.section === 'selection'; }));
                             appbar.sticky = true;
                             appbar.show();
@@ -156,7 +174,11 @@
                     var list = element.querySelector('.list').winControl;
                     var item = list.currentItem;
                     item = list.itemDataSource.list.getAt(item.index);
-                    item.pinned = true;
+                    if(this.winControl.icon === WinJS.UI.AppBarIcon.pin) {
+                        item.pinned = true;
+                    } else {
+                        item.pinned = false;
+                    }
 
                     var req = indexedDB.open('task-board', 3);
                     req.onsuccess = function (e) {
@@ -167,16 +189,20 @@
 
                         store.put(item).onsuccess = function () {
                             var tile = new Windows.UI.StartScreen.SecondaryTile('item.' + item.id);
-                            
-                            tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
-                            tile.backgroundColor = Windows.UI.Colors.red;
-                            tile.shortName = tile.displayName = item.title;
-                            tile.arguments = JSON.stringify({
-                                id: item.id
-                            });
-                            tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
+                            if (item.pinned) {
 
-                            tile.requestCreateAsync();
+                                tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
+                                tile.backgroundColor = Windows.UI.Colors.red;
+                                tile.shortName = tile.displayName = item.title;
+                                tile.arguments = JSON.stringify({
+                                    id: item.id
+                                });
+                                tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
+
+                                tile.requestCreateAsync();
+                            } else {
+                                tile.requestDeleteAsync();
+                            }
                         };
                     };
                 }
