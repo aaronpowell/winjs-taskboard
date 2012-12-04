@@ -1,10 +1,10 @@
-﻿(function () {
+﻿require.define('/js/default.js', function (require, module, exports) {
     "use strict";
 
     WinJS.Binding.optimizeBindingReferences = true;
 
-    var app = WinJS.Application;
-    var activation = Windows.ApplicationModel.Activation;
+    var app = require('/js/winjs-require/app').Application;
+    var activation = require('/js/windows-require/app').Activation;
     var nav = WinJS.Navigation;
 
     app.onactivated = function (args) {
@@ -48,4 +48,4 @@
     };
 
     app.start();
-})();
+});
