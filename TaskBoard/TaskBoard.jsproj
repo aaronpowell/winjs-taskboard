@@ -62,9 +62,9 @@
     <Content Include="js\default.js" />
     <Content Include="css\default.css" />
     <Content Include="js\navigator.js" />
+    <Content Include="js\wamd.min.js.map" />
     <Content Include="js\wamd.ts" />
     <Content Include="js\wamd.js" />
-    <Content Include="js\winjs-require\app.js" />
     <Content Include="pages\create\create.css" />
     <Content Include="pages\create\create.html" />
     <Content Include="pages\create\create.js" />

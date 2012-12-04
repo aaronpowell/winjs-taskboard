@@ -3,8 +3,8 @@
 
     WinJS.Binding.optimizeBindingReferences = true;
 
-    var app = require('/js/winjs-require/app').Application;
-    var activation = require('/js/windows-require/app').Activation;
+    var app = require('WinJS/Application');
+    var activation = require('Windows/ApplicationModel/Activation');
     var nav = WinJS.Navigation;
 
     app.onactivated = function (args) {
