@@ -5,6 +5,7 @@
     binding.optimizeBindingReferences = true;
 
     require('/pages/overview/index.js');
+    require('/pages/create/create.js');
 
     var app = require('app');
 

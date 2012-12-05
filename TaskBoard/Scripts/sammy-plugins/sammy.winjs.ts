@@ -19,7 +19,7 @@ require.define('sammy.winjs', function (require, m, exports) {
 
             processAll(element);
             
-            return element;
+            return element.firstChild;
         }
 
         app.helper(method_alias, template);

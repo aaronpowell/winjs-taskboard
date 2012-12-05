@@ -1,0 +1,36 @@
+﻿<div>
+	<div class="create fragment">
+		<header aria-label="Header content" role="banner">
+			<button class="win-backbutton" aria-label="Back" disabled type="button"></button>
+			<h1 class="titlearea win-type-ellipsis">
+				<span class="pagetitle">Create Task</span>
+			</h1>
+		</header>
+		<section aria-label="Main content" role="main">
+			<form>
+				<fieldset>
+					<legend>Details</legend>
+
+					<div>
+						<span>Title</span>
+						<input type="text" />
+					</div>
+					<div>
+						<span>Description</span>
+						<textarea></textarea>
+					</div>
+					<div>
+						<span>Due Date</span>
+						<div id="due" data-win-control="WinJS.UI.DatePicker"></div>
+					</div>
+					<div>
+						<div id="completed" data-win-control="WinJS.UI.ToggleSwitch" data-win-options="{title: 'Completed', labelOff: 'Nope', labelOn: 'Yep'}"></div>
+					</div>
+					<div>
+						<button>Save</button>
+					</div>
+				</fieldset>
+			</form>
+		</section>
+	</div>
+</div>

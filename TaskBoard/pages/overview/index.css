@@ -5,6 +5,7 @@
 
 .index .list {
     height: 100%;
+    min-height: 900px;
     position: relative;
     width: 100%;
     z-index: 0;

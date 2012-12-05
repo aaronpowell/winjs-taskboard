@@ -13,7 +13,7 @@
         border: none;
     }
 
-        .create form fieldset label {
+        .create form fieldset span {
             display: inline-block;
             width: 200px;
         }

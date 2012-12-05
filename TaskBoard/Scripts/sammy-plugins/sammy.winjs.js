@@ -16,7 +16,7 @@ require.define('sammy.winjs', function (require, m, exports) {
             element.style.height = "100%";
             element.innerHTML = rendered;
             processAll(element);
-            return element;
+            return element.firstChild;
         };
         app.helper(method_alias, template);
     };

@@ -76,6 +76,7 @@
     <Content Include="pages\create\create.css" />
     <Content Include="pages\create\create.html" />
     <Content Include="pages\create\create.js" />
+    <Content Include="pages\create\create.template" />
     <Content Include="pages\overview\index.css" />
     <Content Include="pages\overview\index.html" />
     <Content Include="pages\overview\index.js" />
