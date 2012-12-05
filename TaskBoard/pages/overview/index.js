@@ -1,6 +1,11 @@
-﻿(function () {
+﻿require.define('/pages/overview/index.js', function (require, module, exports) {
     "use strict";
-    var nav = WinJS.Navigation;
+    var nav = require('WinJS/Navigation');
+    var binding = require('/js/bindingConverters.js');
+    var ns = require('WinJS/Namespace');
+
+    ns.define('bindingHelpers', binding);
+
     var commands = [];
 
     WinJS.UI.Pages.define("/pages/overview/index.html", {
@@ -84,7 +89,7 @@
                         var index = e.detail.itemIndex;
                         var item = groupList.getAt(index);
 
-                        nav.navigate('/pages/overview/item.html', { item: item });
+                        nav.navigate('/pages/overview/item', { item: item });
                     }
                 });
 
@@ -108,7 +113,7 @@
                 label: 'Add',
                 onclick: function (e) {
                     e.preventDefault();
-                    nav.navigate('/pages/create/create.html');
+                    nav.navigate('/pages/create/create');
                 }
             });
             commands.push(cmd);
@@ -246,4 +251,4 @@
 
         }
     });
-})();
+});

@@ -1,7 +1,7 @@
-﻿(function () {
+﻿require.define('/pages/create/create.js', function (require, module, exports) {
     "use strict";
 
-    var nav = WinJS.Navigation;
+    var nav = require('WinJS/Navigation');
 
     WinJS.UI.Pages.define("/pages/create/create.html", {
         ready: function (element, options) {
@@ -24,7 +24,7 @@
                     });
 
                     req.onsuccess = function (e) {
-                        nav.navigate('/pages/overview/index.html');
+                        nav.navigate('/pages/overview/index');
                     };
                 };
             });
@@ -36,4 +36,4 @@
         updateLayout: function (element, viewState, lastViewState) {
         }
     });
-})();
+});

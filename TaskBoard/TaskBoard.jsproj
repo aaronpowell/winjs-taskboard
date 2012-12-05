@@ -53,11 +53,17 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="App_Readme\Handlebarsjs_LICENSE" />
+    <Content Include="App_Readme\Handlebarsjs_README.md" />
     <Content Include="default.html" />
     <Content Include="images\logo.png" />
     <Content Include="images\smalllogo.png" />
     <Content Include="images\splashscreen.png" />
     <Content Include="images\storelogo.png" />
+    <Content Include="js\app.js" />
+    <Content Include="js\app.min.js" />
+    <Content Include="js\app.min.js.map" />
+    <Content Include="js\app.ts" />
     <Content Include="js\bindingConverters.js" />
     <Content Include="js\default.js" />
     <Content Include="css\default.css" />
@@ -65,15 +71,27 @@
     <Content Include="js\wamd.min.js.map" />
     <Content Include="js\wamd.ts" />
     <Content Include="js\wamd.js" />
+    <Content Include="js\wrappers.js" />
+    <Content Include="packages.config" />
     <Content Include="pages\create\create.css" />
     <Content Include="pages\create\create.html" />
     <Content Include="pages\create\create.js" />
     <Content Include="pages\overview\index.css" />
     <Content Include="pages\overview\index.html" />
     <Content Include="pages\overview\index.js" />
+    <Content Include="pages\overview\index.template" />
     <Content Include="pages\overview\item.css" />
     <Content Include="pages\overview\item.html" />
     <Content Include="pages\overview\item.js" />
+    <Content Include="Scripts\handlebars.js" />
+    <Content Include="Scripts\handlebars.runtime.js" />
+    <Content Include="Scripts\jquery-1.8.3.intellisense.js" />
+    <Content Include="Scripts\jquery-1.8.3.js" />
+    <Content Include="Scripts\jquery-1.8.3.min.js" />
+    <Content Include="Scripts\sammy-0.7.2.js" />
+    <Content Include="Scripts\sammy-plugins\sammy.winjs.js" />
+    <Content Include="Scripts\sammy-plugins\sammy.winjs.min.js" />
+    <Content Include="Scripts\sammy-plugins\sammy.winjs.ts" />
     <None Include="TaskBoard_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

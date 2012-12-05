@@ -1,7 +1,7 @@
-﻿(function () {
+﻿require.define('/pages/overview/item.js', function (require, module, exports) {
     "use strict";
 
-    var nav = WinJS.Navigation;
+    var nav = require('WinJS/Navigation');
 
     WinJS.UI.Pages.define("/pages/overview/item.html", {
         ready: function (element, options) {
@@ -42,4 +42,4 @@
         updateLayout: function (element, viewState, lastViewState) {
         }
     });
-})();
+});

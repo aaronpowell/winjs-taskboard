@@ -1,17 +1,4 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Task board overview</title>
-
-    <!-- WinJS references -->
-    <link href="//Microsoft.WinJS.1.0/css/ui-dark.css" rel="stylesheet" />
-    <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
-    <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
-
-    <link href="index.css" rel="stylesheet" />
-</head>
-<body>
+﻿<div>
     <div class="headertemplate" data-win-control="WinJS.Binding.Template">
         <button class="group-header win-type-x-large win-type-interactive" data-win-bind="groupKey: key" role="link" tabindex="-1" type="button">
             <span class="group-title win-type-ellipsis" data-win-bind="textContent: key"></span>
@@ -43,6 +30,4 @@
         <button id="completeCommand" data-win-control="WinJS.UI.AppBarCommand" data-win-options="{section: 'selection'}"></button>
         <button id="pinCommand" data-win-control="WinJS.UI.AppBarCommand" data-win-options="{section: 'selection'}"></button>
     </div>
-
-</body>
-</html>
+</div>
