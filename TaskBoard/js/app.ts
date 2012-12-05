@@ -24,6 +24,8 @@ require.define('app', function (require, m, exports) {
         get: []
     };
 
+    var aroundHandlers = [];
+
     app.onactivated = function (args) {
         handlers.activated.forEach(handler => handler.call(app, args));
 
@@ -36,6 +38,8 @@ require.define('app', function (require, m, exports) {
                 this.use('WinJS');
 
                 routes.get.forEach(route => this.get(route.url, route.handler));
+
+                aroundHandlers.forEach(handler => this.around(handler));
             });
 
             sammy.run('#/');
@@ -43,16 +47,19 @@ require.define('app', function (require, m, exports) {
     };
 
     m.exports = {
-        on: function (type: string, handler: (args) => void ) {
+        on: function (type: string, handler: (args) => void) {
             handlers[type].push(handler);
         },
-        get: function (url: string, fn: (ctx) => void ) {
+        get: function (url: string, fn: (ctx) => void) {
             routes.get.push({ url: url, handler: fn });
             return this;
         },
         start: function () {
             app.start();
+        },
+        around: function (fn: (callback) => void ) {
+            aroundHandlers.push(fn)
+            return this;
         }
     };
-
 });

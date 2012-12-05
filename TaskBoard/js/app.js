@@ -11,6 +11,7 @@ require.define('app', function (require, m, exports) {
     var routes = {
         get: []
     };
+    var aroundHandlers = [];
     app.onactivated = function (args) {
         handlers.activated.forEach(function (handler) {
             return handler.call(app, args);
@@ -26,6 +27,9 @@ require.define('app', function (require, m, exports) {
                 this.use('WinJS');
                 routes.get.forEach(function (route) {
                     return _this.get(route.url, route.handler);
+                });
+                aroundHandlers.forEach(function (handler) {
+                    return _this.around(handler);
                 });
             });
             sammy.run('#/');
@@ -44,6 +48,10 @@ require.define('app', function (require, m, exports) {
         },
         start: function () {
             app.start();
+        },
+        around: function (fn) {
+            aroundHandlers.push(fn);
+            return this;
         }
     };
 });

@@ -8,56 +8,28 @@
 
     var app = require('app');
 
-    //var activation = require('Windows/ApplicationModel/Activation');
-    //var nav = require('WinJS/Navigation');
-    //var navigator = require('/js/navigator.js');
+    app.on('activated', function() {
+        var req = window.indexedDB.open('task-board', 3);
+        req.onupgradeneeded = function (e) {
+            var db = e.target.result;
 
-    //app.onactivated = function (args) {
-    //    if (args.detail.kind === activation.ActivationKind.launch) {
-    //        if (args.detail.previousExecutionState !== activation.ApplicationExecutionState.terminated) {
-    //        } else {
-    //        }
-    //        if (app.sessionState.history) {
-    //            nav.history = app.sessionState.history;
-    //        }
-    //        if (args.detail.arguments) {
-    //            var tileArg = JSON.parse(args.detail.arguments);
+            var store = db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
 
-    //            var req = window.indexedDB.open('task-board', 3);
+            store.createIndex('done', 'done', { unique: false });
+        };
+        req.onsuccess = function(e) {
+            //do nothing for now
+        };
+    });
 
-    //            req.onsuccess = function (e) {
-    //                var db = e.target.result;
-
-    //                var transaction = db.transaction('task');
-    //                var store = transaction.objectStore('task');
-    //                store.get(tileArg.id).onsuccess = function (e) {
-    //                    nav.navigate('/pages/overview/item.html', {
-    //                        item: e.target.result
-    //                    });
-    //                };
-    //            };
-    //        }
-
-    //        var contentHost = document.getElementById('contenthost');
-    //        var pcn = new navigator.PageControlNavigator(contentHost, {
-    //             home: '/pages/overview/index'
-    //        });
-
-    //        args.setPromise(WinJS.UI.processAll().then(function () {
-    //            if (nav.location) {
-    //                nav.history.current.initialPlaceholder = true;
-    //                return nav.navigate(nav.location, nav.state);
-    //            } else {
-    //                return nav.navigate(navigator.navigator.home);
-    //            }
-    //        }));
-
-    //    }
-    //};
-
-    //app.oncheckpoint = function (args) {
-    //    app.sessionState.history = nav.history;
-    //};
+    app.around(function (callback) {
+        var context = this;
+        var req = window.indexedDB.open('task-board', 3);
+        req.onsuccess = function(e) {
+            context.db = req.result;
+            callback();
+        };
+    });
 
     app.start();
 });
