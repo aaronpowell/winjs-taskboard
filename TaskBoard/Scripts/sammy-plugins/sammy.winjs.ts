@@ -18,7 +18,7 @@ require.define('sammy.winjs', function (require, m, exports) {
             element.innerHTML = rendered;
 
             processAll(element);
-
+            
             return element;
         }
 

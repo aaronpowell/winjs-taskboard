@@ -8,203 +8,212 @@
 
     var commands = [];
 
-    WinJS.UI.Pages.define("/pages/overview/index.html", {
-        ready: function (element) {
-            var req = window.indexedDB.open('task-board', 3);
-            req.onupgradeneeded = function (e) {
-                var db = e.target.result;
+    var app = require('app');
 
-                var store = db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
+    app.get('#/', function(context) {
+        context.app.swap('');
 
-                store.createIndex('done', 'done', { unique: false });
-            };
+        context.render('/pages/overview/index.template')
+            .appendTo(context.$element())
+            .then(ready);
+    });
 
-            req.onsuccess = function (e) {
-                var db = req.result;
+    var ready = function(element) {
+        var req = window.indexedDB.open('task-board', 3);
+        req.onupgradeneeded = function(e) {
+            var db = e.target.result;
 
-                var list = new WinJS.Binding.List();
-                var now = new Date();
-                var groupList = list.createGrouped(
-                    function (item) {
-                        var diff = Math.round((item.due - now) / (24 * 3600 * 1000));
+            var store = db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
 
-                        if (diff <= 0) {
-                            return item.key = 'Overdue';
-                        }
-                        if (diff >= 1 && diff <= 3) {
-                            return item.key = 'Soon';
-                        }
-                        if (diff >= 4 && diff <= 7) {
-                            return item.key = 'End of the week';
-                        }
-                        return item.key = 'Coming up';
-                    }, function (item) {
-                        return {
-                            title: item.title,
-                            key: item.key
-                        };
-                    }, function (leftKey, rightKey) {
-                        return leftKey.charCodeAt(0) - rightKey.charCodeAt(0);
-                    });
+            store.createIndex('done', 'done', { unique: false });
+        };
 
-                var ctrl = element.querySelector('.list');
-                WinJS.UI.setOptions(ctrl.winControl, {
-                    groupHeaderTemplate: element.querySelector('.headertemplate'),
-                    itemTemplate: element.querySelector('.itemtemplate'),
-                    itemDataSource: groupList.dataSource,
-                    groupDataSource: groupList.groups.dataSource,
-                    selectionMode: WinJS.UI.SelectionMode.single,
-                    onselectionchanged: function (e) {
-                        var selectedItems = e.target.winControl.selection;
-                        var appbar = element.querySelector('#appbar').winControl;
-                        if (selectedItems.count()) {
-                            if (selectedItems.count() === 1) {
-                                selectedItems.getItems().done(function (items) {
-                                    var item = items[0];
-                                    var pinned = commands.filter(function (cmd) { return cmd.id === 'pinCommand'; })[0];
-                                    if (item.data.pinned) {
-                                        WinJS.UI.setOptions(pinned, {
-                                            icon: WinJS.UI.AppBarIcon.unpin,
-                                            label: 'Unpin'
-                                        });
-                                    } else {
-                                        WinJS.UI.setOptions(pinned, {
-                                            icon: WinJS.UI.AppBarIcon.pin,
-                                            label: 'Pin'
-                                        });
-                                    }
-                                });
-                            }
+        req.onsuccess = function(e) {
+            var db = req.result;
 
-                            appbar.showCommands(commands.filter(function (cmd) { return cmd.section === 'selection'; }));
-                            appbar.sticky = true;
-                            appbar.show();
-                        } else {
-                            appbar.hideCommands(commands.filter(function (cmd) { return cmd.section === 'selection'; }));
-                            appbar.sticky = false;
-                            appbar.hide();
-                        }
-                    },
-                    oniteminvoked: function (e) {
-                        var index = e.detail.itemIndex;
-                        var item = groupList.getAt(index);
+            var list = new WinJS.Binding.List();
+            var now = new Date();
+            var groupList = list.createGrouped(
+                function(item) {
+                    var diff = Math.round((item.due - now) / (24 * 3600 * 1000));
 
-                        nav.navigate('/pages/overview/item', { item: item });
+                    if (diff <= 0) {
+                        return item.key = 'Overdue';
                     }
+                    if (diff >= 1 && diff <= 3) {
+                        return item.key = 'Soon';
+                    }
+                    if (diff >= 4 && diff <= 7) {
+                        return item.key = 'End of the week';
+                    }
+                    return item.key = 'Coming up';
+                }, function(item) {
+                    return {
+                        title: item.title,
+                        key: item.key
+                    };
+                }, function(leftKey, rightKey) {
+                    return leftKey.charCodeAt(0) - rightKey.charCodeAt(0);
                 });
 
-                var transaction = db.transaction('task');
-                var store = transaction.objectStore('task');
-                var index = store.index('done');
+            var ctrl = element.querySelector('.list');
+            WinJS.UI.setOptions(ctrl.winControl, {
+                groupHeaderTemplate: element.querySelector('.headertemplate'),
+                itemTemplate: element.querySelector('.itemtemplate'),
+                itemDataSource: groupList.dataSource,
+                groupDataSource: groupList.groups.dataSource,
+                selectionMode: WinJS.UI.SelectionMode.single,
+                onselectionchanged: function(e) {
+                    var selectedItems = e.target.winControl.selection;
+                    var appbar = element.querySelector('#appbar').winControl;
+                    if (selectedItems.count()) {
+                        if (selectedItems.count() === 1) {
+                            selectedItems.getItems().done(function(items) {
+                                var item = items[0];
+                                var pinned = commands.filter(function(cmd) { return cmd.id === 'pinCommand'; })[0];
+                                if (item.data.pinned) {
+                                    WinJS.UI.setOptions(pinned, {
+                                        icon: WinJS.UI.AppBarIcon.unpin,
+                                        label: 'Unpin'
+                                    });
+                                } else {
+                                    WinJS.UI.setOptions(pinned, {
+                                        icon: WinJS.UI.AppBarIcon.pin,
+                                        label: 'Pin'
+                                    });
+                                }
+                            });
+                        }
 
-                index.openCursor(IDBKeyRange.only('no')).onsuccess = function (e) {
-                    var cursor = e.target.result;
-                    if (cursor) {
-                        list.push(cursor.value);
-                        cursor.continue();
-                    }
-                };
-            };
-
-            var cmd = document.getElementById('addCommand').winControl;
-            WinJS.UI.setOptions(cmd, {
-                icon: WinJS.UI.AppBarIcon.add,
-                id: 'add',
-                label: 'Add',
-                onclick: function (e) {
-                    e.preventDefault();
-                    nav.navigate('/pages/create/create');
-                }
-            });
-            commands.push(cmd);
-
-            cmd = document.getElementById('deleteCommand').winControl;
-            WinJS.UI.setOptions(cmd, {
-                icon: WinJS.UI.AppBarIcon.delete,
-                id: 'delete',
-                label: 'Delete',
-                onclick: function () {
-                    var list = element.querySelector('.list').winControl;
-                    var item = list.currentItem;
-                    item = list.itemDataSource.list.getAt(item.index);
-
-                    var req = indexedDB.open('task-board', 3);
-                    req.onsuccess = function (e) {
-                        var db = e.target.result;
-
-                        var transaction = db.transaction('task', 'readwrite');
-                        var store = transaction.objectStore('task');
-
-                        store.delete(item.id).onsuccess = function () {
-                            list.itemDataSource.remove(list.currentItem.key);
-                        };
-                    };
-                }
-            });
-            commands.push(cmd);
-
-            cmd = document.getElementById('completeCommand').winControl;
-            WinJS.UI.setOptions(cmd, {
-                icon: WinJS.UI.AppBarIcon.accept,
-                id: 'complete',
-                label: 'Complete',
-                onclick: function () {
-                    var list = element.querySelector('.list').winControl;
-                    var item = list.currentItem;
-                    item = list.itemDataSource.list.getAt(item.index);
-                    item.completed = true;
-                    item.done = true;
-
-                    var req = indexedDB.open('task-board', 3);
-                    req.onsuccess = function (e) {
-                        var db = e.target.result;
-
-                        var transaction = db.transaction('task', 'readwrite');
-                        var store = transaction.objectStore('task');
-
-                        store.put(item).onsuccess = function () {
-                            list.itemDataSource.remove(list.currentItem.key);
-                        };
-                    };
-                }
-            });
-            commands.push(cmd);
-            
-            cmd = document.getElementById('pinCommand').winControl;
-            WinJS.UI.setOptions(cmd, {
-                icon: WinJS.UI.AppBarIcon.pin,
-                id: 'pin',
-                label: 'Pin',
-                onclick: function () {
-                    var list = element.querySelector('.list').winControl;
-                    var item = list.currentItem;
-                    item = list.itemDataSource.list.getAt(item.index);
-                    if(this.winControl.icon === WinJS.UI.AppBarIcon.pin) {
-                        item.pinned = true;
+                        appbar.showCommands(commands.filter(function(cmd) { return cmd.section === 'selection'; }));
+                        appbar.sticky = true;
+                        appbar.show();
                     } else {
-                        item.pinned = false;
+                        appbar.hideCommands(commands.filter(function(cmd) { return cmd.section === 'selection'; }));
+                        appbar.sticky = false;
+                        appbar.hide();
                     }
+                },
+                oniteminvoked: function(e) {
+                    var index = e.detail.itemIndex;
+                    var item = groupList.getAt(index);
 
-                    var req = indexedDB.open('task-board', 3);
-                    req.onsuccess = function (e) {
-                        var db = e.target.result;
+                    nav.navigate('/pages/overview/item', { item: item });
+                }
+            });
 
-                        var transaction = db.transaction('task', 'readwrite');
-                        var store = transaction.objectStore('task');
+            var transaction = db.transaction('task');
+            var store = transaction.objectStore('task');
+            var index = store.index('done');
 
-                        store.put(item).onsuccess = function () {
-                            var tile = new Windows.UI.StartScreen.SecondaryTile('item.' + item.id);
-                            if (item.pinned) {
+            index.openCursor(IDBKeyRange.only('no')).onsuccess = function(e) {
+                var cursor = e.target.result;
+                if (cursor) {
+                    list.push(cursor.value);
+                    cursor.continue();
+                }
+            };
+        };
 
-                                tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
-                                tile.backgroundColor = Windows.UI.Colors.darkRed;
-                                tile.shortName = tile.displayName = item.title;
-                                tile.arguments = JSON.stringify({
-                                    id: item.id
-                                });
-                                tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
-                                
-                                tile.requestCreateAsync()/*.then(function () {
+        var cmd = document.getElementById('addCommand').winControl;
+        WinJS.UI.setOptions(cmd, {
+            icon: WinJS.UI.AppBarIcon.add,
+            id: 'add',
+            label: 'Add',
+            onclick: function(e) {
+                e.preventDefault();
+                nav.navigate('/pages/create/create');
+            }
+        });
+        commands.push(cmd);
+
+        cmd = document.getElementById('deleteCommand').winControl;
+        WinJS.UI.setOptions(cmd, {
+            icon: WinJS.UI.AppBarIcon.delete,
+            id: 'delete',
+            label: 'Delete',
+            onclick: function() {
+                var list = element.querySelector('.list').winControl;
+                var item = list.currentItem;
+                item = list.itemDataSource.list.getAt(item.index);
+
+                var req = indexedDB.open('task-board', 3);
+                req.onsuccess = function(e) {
+                    var db = e.target.result;
+
+                    var transaction = db.transaction('task', 'readwrite');
+                    var store = transaction.objectStore('task');
+
+                    store.delete(item.id).onsuccess = function() {
+                        list.itemDataSource.remove(list.currentItem.key);
+                    };
+                };
+            }
+        });
+        commands.push(cmd);
+
+        cmd = document.getElementById('completeCommand').winControl;
+        WinJS.UI.setOptions(cmd, {
+            icon: WinJS.UI.AppBarIcon.accept,
+            id: 'complete',
+            label: 'Complete',
+            onclick: function() {
+                var list = element.querySelector('.list').winControl;
+                var item = list.currentItem;
+                item = list.itemDataSource.list.getAt(item.index);
+                item.completed = true;
+                item.done = true;
+
+                var req = indexedDB.open('task-board', 3);
+                req.onsuccess = function(e) {
+                    var db = e.target.result;
+
+                    var transaction = db.transaction('task', 'readwrite');
+                    var store = transaction.objectStore('task');
+
+                    store.put(item).onsuccess = function() {
+                        list.itemDataSource.remove(list.currentItem.key);
+                    };
+                };
+            }
+        });
+        commands.push(cmd);
+
+        cmd = document.getElementById('pinCommand').winControl;
+        WinJS.UI.setOptions(cmd, {
+            icon: WinJS.UI.AppBarIcon.pin,
+            id: 'pin',
+            label: 'Pin',
+            onclick: function() {
+                var list = element.querySelector('.list').winControl;
+                var item = list.currentItem;
+                item = list.itemDataSource.list.getAt(item.index);
+                if (this.winControl.icon === WinJS.UI.AppBarIcon.pin) {
+                    item.pinned = true;
+                } else {
+                    item.pinned = false;
+                }
+
+                var req = indexedDB.open('task-board', 3);
+                req.onsuccess = function(e) {
+                    var db = e.target.result;
+
+                    var transaction = db.transaction('task', 'readwrite');
+                    var store = transaction.objectStore('task');
+
+                    store.put(item).onsuccess = function() {
+                        var tile = new Windows.UI.StartScreen.SecondaryTile('item.' + item.id);
+                        if (item.pinned) {
+
+                            tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
+                            tile.backgroundColor = Windows.UI.Colors.darkRed;
+                            tile.shortName = tile.displayName = item.title;
+                            tile.arguments = JSON.stringify({
+                                id: item.id
+                            });
+                            tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
+
+                            tile.requestCreateAsync()/*.then(function () {
                                     var notifications = Windows.UI.Notifications;
                                     
                                     var tileXml = notifications.TileUpdateManager.getTemplateContent(notifications.TileTemplateType.tileWideText01);
@@ -229,26 +238,17 @@
                                     var tileUpdater = notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(tile.tileId);
                                     tileUpdater.update(tileNotification);
                                 })*/;
-                            } else {
-                                tile.requestDeleteAsync();
-                            }
-                        };
+                        } else {
+                            tile.requestDeleteAsync();
+                        }
                     };
-                }
-            });
-            commands.push(cmd);
+                };
+            }
+        });
+        commands.push(cmd);
 
-            document.getElementById('appbar').winControl.hideCommands(commands.filter(function (cmd) {
-                 return cmd.section === 'selection';
-            }));
-        },
-
-        unload: function () {
-
-        },
-
-        updateLayout: function (element, viewState, lastViewState) {
-
-        }
-    });
+        document.getElementById('appbar').winControl.hideCommands(commands.filter(function(cmd) {
+            return cmd.section === 'selection';
+        }));
+    };
 });

@@ -4,13 +4,9 @@
     var binding = require('WinJS/Binding');
     binding.optimizeBindingReferences = true;
 
+    require('/pages/overview/index.js');
+
     var app = require('app');
-
-    app.get('#/', function(context) {
-        context.app.swap('');
-
-        context.render('/pages/overview/index.template').appendTo(context.$element());
-    });
 
     //var activation = require('Windows/ApplicationModel/Activation');
     //var nav = require('WinJS/Navigation');
