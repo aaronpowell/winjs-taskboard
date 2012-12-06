@@ -21,7 +21,14 @@
             </h1>
         </header>
         <section aria-label="Main content" role="main">
-            <div class="list win-selectionstylefilled" aria-label="Tasks" data-win-control="WinJS.UI.ListView" data-win-bind="winControl.groupHeaderTemplate: groupHeaderTemplate; winControl.itemTemplate: itemTemplate; winControl.itemDataSource: items.dataSource; winControl.groupDataSource: groupedItems.groups.dataSource"></div>
+            <div class="list win-selectionstylefilled" aria-label="Tasks" data-win-control="WinJS.UI.ListView" 
+                 data-win-bind="
+                 winControl.groupHeaderTemplate: groupHeaderTemplate;
+                 winControl.itemTemplate: itemTemplate;
+                 winControl.itemDataSource: groupedList.dataSource;
+                 winControl.groupDataSource: groupedList.groups.dataSource;
+                 winControl.oniteminvoked: itemClick
+                 "></div>
         </section>
     </div>
     <div id="appbar" data-win-control="WinJS.UI.AppBar">

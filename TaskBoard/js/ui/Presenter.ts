@@ -42,5 +42,16 @@ require.define('Presenter', function (require, m, exports) {
                 history.back();
             }, false);
         }
+
+        if (options.events) {
+            Object.keys(options.events).forEach(val => {
+                var evt = options.events[val];
+                var ctrl = options.element.querySelector(val);
+
+                Object.keys(evt).forEach(e => {
+                    ctrl.addEventListener(e, evt[e], false);
+                });
+            });
+        }
     };
 });

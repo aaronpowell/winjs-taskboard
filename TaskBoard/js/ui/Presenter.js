@@ -33,6 +33,15 @@ require.define('Presenter', function (require, m, exports) {
                 history.back();
             }, false);
         }
+        if(options.events) {
+            Object.keys(options.events).forEach(function (val) {
+                var evt = options.events[val];
+                var ctrl = options.element.querySelector(val);
+                Object.keys(evt).forEach(function (e) {
+                    ctrl.addEventListener(e, evt[e], false);
+                });
+            });
+        }
     };
 });
 //@ sourceMappingURL=Presenter.js.map

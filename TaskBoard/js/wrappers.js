@@ -9,3 +9,7 @@ require.define('sammy', function(require, module, exports) {
 require.define('handlebars', function (require, module, exports) {
     module.exports = Handlebars;
 });
+
+require.define('db', function(require, modules) {
+    modules.exports = db;
+});

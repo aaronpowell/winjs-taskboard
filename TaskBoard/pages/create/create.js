@@ -14,10 +14,7 @@
     app.get('#/create', '/pages/create/create.template', CreatePageViewModel);
 
     app.post('#/create', function(context) {
-        var transaction = this.db.transaction('task', 'readwrite');
-        var store = transaction.objectStore('task');
-
-        var req = store.add({
+        this.db.add({
             title: context.params['title'],
             description: context.params['description'],
             due: context.params['due'].getTime(),
@@ -25,10 +22,8 @@
             done: context.params['completed'] ? 'yes' : 'no',
             updated: Date.now(),
             created: Date.now()
-        });
-        
-        req.onsuccess = function (e) {
+        }).done(function () {
             context.app.setLocation('#/');
-        };
+        });
     });
 });

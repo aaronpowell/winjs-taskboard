@@ -40,20 +40,25 @@
                 groupedList: groupList,
                 groupHeaderTemplate: element.querySelector('.headertemplate'),
                 itemTemplate: element.querySelector('.itemtemplate')
+            },
+            events: {
+                '.list': {
+                    iteminvoked: function(e) {
+                        var index = e.detail.itemIndex;
+                        var item = groupList.getAt(index);
+
+                        context.app.setLocation('#/item/' + item.id);
+                    }
+                }
             }
         });
         
-        var transaction = context.db.transaction('task');
-        var store = transaction.objectStore('task');
-        var index = store.index('done');
-
-        index.openCursor(IDBKeyRange.only('no')).onsuccess = function (e) {
-            var cursor = e.target.result;
-            if (cursor) {
-                list.push(cursor.value);
-                cursor.continue();
-            }
-        };
+        context.db.task.query('done')
+            .only('no')
+            .execute()
+            .done(function(items) {
+                list.push.apply(list, items);
+            });
 
         //ready.call(context, element);
 

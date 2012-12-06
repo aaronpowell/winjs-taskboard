@@ -9,28 +9,40 @@
     require('/pages/item/item.js');
 
     var app = require('app');
+    var db = require('db');
 
-    app.on('activated', function() {
-        var req = window.indexedDB.open('task-board', 3);
-        req.onupgradeneeded = function (e) {
-            var db = e.target.result;
-
-            var store = db.createObjectStore('task', { keyPath: 'id', autoIncrement: true });
-
-            store.createIndex('done', 'done', { unique: false });
-        };
-        req.onsuccess = function(e) {
-            //do nothing for now
-        };
+    app.on('activated', function () {
+        db.open({
+            server: 'task-board',
+            version: 3,
+            schema: {
+                task: {
+                    key: { keyPath: 'id', autoIncrement: true },
+                    indexed: {
+                        done: { unique: false }
+                    }
+                }
+            }
+        });
     });
 
     app.around(function (callback) {
         var context = this;
-        var req = window.indexedDB.open('task-board', 3);
-        req.onsuccess = function(e) {
-            context.db = req.result;
+        db.open({
+            server: 'task-board',
+            version: 3,
+            schema: {
+                task: {
+                    key: { keyPath: 'id', autoIncrement: true },
+                    indexed: {
+                        done: { unique: false }
+                    }
+                }
+            }
+        }).done(function (server) {
+            context.db = server;
             callback();
-        };
+        });
     });
 
     app.start();
