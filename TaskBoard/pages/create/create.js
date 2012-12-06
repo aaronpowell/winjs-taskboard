@@ -5,12 +5,12 @@
     
     var Presenter = require('Presenter');
 
-    var CreatePageViewModel = function (element) {
+    var CreatePageViewModel = function (context, element) {
         var presenter = new Presenter({
             element: element
         });
 
-        ready.call(this, presenter.element);
+        ready.call(context, presenter.element);
     };
 
     app.get('#/create', '/pages/create/create.template', CreatePageViewModel);

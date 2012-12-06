@@ -5,14 +5,14 @@
     var Presenter = require('Presenter');
     var AppBarViewModel = require('/pages/overview/appbar.js');
 
-    var OverviewPageViewModel = function (element) {
-        var appBarViewModel = new AppBarViewModel(this, element);
+    var OverviewPageViewModel = function (context, element) {
+        var appBarViewModel = new AppBarViewModel(context, element);
 
         var presenter = new Presenter({
             element: element
         });
 
-        ready.call(this, element);
+        ready.call(context, element);
 
         //TODO: work out why this hack is required
         element.querySelector('.list').style.height = '900px';

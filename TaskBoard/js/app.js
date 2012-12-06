@@ -29,7 +29,9 @@ require.define('app', function (require, m, exports) {
                 routes.get.forEach(function (route) {
                     _this.get(route.url, function (context) {
                         context.app.swap('');
-                        context.render(route.template).appendTo(context.$element()).then(route.viewModel.bind(context));
+                        context.render(route.template).appendTo(context.$element()).then(function (element) {
+                            return new route.viewModel(context, element);
+                        });
                     });
                 });
                 routes.post.forEach(function (route) {

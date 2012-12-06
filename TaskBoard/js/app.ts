@@ -2,6 +2,7 @@
 interface route {
     url: string;
     handler: (context) => void;
+    viewModel: any;
 }
 
 interface routes {
@@ -45,7 +46,7 @@ require.define('app', function (require, m, exports) {
 
                         context.render(route.template)
                             .appendTo(context.$element())
-                            .then(route.viewModel.bind(context));
+                            .then(element => new route.viewModel(context, element));
                     });
                 });
 

@@ -5,8 +5,7 @@
 
     var Presenter = require('Presenter');
 
-    var ItemPageViewModel = function (element) {
-        var context = this;
+    var ItemPageViewModel = function (context, element) {
         var db = context.db;
         var transaction = db.transaction('task');
         var store = transaction.objectStore('task');
