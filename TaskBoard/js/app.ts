@@ -42,8 +42,8 @@ require.define('app', function (require, m, exports) {
                         context.app.swap('');
 
                         context.render(route.template)
-                            .appendTo(context.$element)
-                            .then(route.viewModel);
+                            .appendTo(context.$element())
+                            .then(route.viewModel.bind(context));
                     });
                 });
 

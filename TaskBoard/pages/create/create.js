@@ -2,16 +2,18 @@
     "use strict";
 
     var app = require('app');
+    
+    var Presenter = require('Presenter');
 
-    app.get('#/create', function (context) {
-        context.app.swap('');
+    var CreatePageViewModel = function (element) {
+        var presenter = new Presenter({
+            element: element
+        });
 
-        context.render('/pages/create/create.template')
-            .appendTo(context.$element())
-            .then(ready.bind(context));
-    });
+        ready.call(this, presenter.element);
+    };
 
-    var nav = require('WinJS/Navigation');
+    app.get('#/create', '/pages/create/create.template', CreatePageViewModel);
 
     var ready = function (element) {
         var context = this;
