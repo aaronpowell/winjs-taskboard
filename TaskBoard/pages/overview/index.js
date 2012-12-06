@@ -8,11 +8,54 @@
     var OverviewPageViewModel = function (context, element) {
         var appBarViewModel = new AppBarViewModel(context, element);
 
-        var presenter = new Presenter({
-            element: element
-        });
+        var list = new List();
+        var now = new Date();
+        var groupList = list.createGrouped(
+            function (item) {
+                var diff = Math.round((item.due - now) / (24 * 3600 * 1000));
 
-        ready.call(context, element);
+                if (diff <= 0) {
+                    return item.key = 'Overdue';
+                }
+                if (diff >= 1 && diff <= 3) {
+                    return item.key = 'Soon';
+                }
+                if (diff >= 4 && diff <= 7) {
+                    return item.key = 'End of the week';
+                }
+                return item.key = 'Coming up';
+            }, function (item) {
+                return {
+                    title: item.title,
+                    key: item.key
+                };
+            }, function (leftKey, rightKey) {
+                return leftKey.charCodeAt(0) - rightKey.charCodeAt(0);
+            });
+
+        var presenter = new Presenter({
+            element: element,
+            dataContext: {
+                list: list,
+                groupedList: groupList,
+                groupHeaderTemplate: element.querySelector('.headertemplate'),
+                itemTemplate: element.querySelector('.itemtemplate')
+            }
+        });
+        
+        var transaction = context.db.transaction('task');
+        var store = transaction.objectStore('task');
+        var index = store.index('done');
+
+        index.openCursor(IDBKeyRange.only('no')).onsuccess = function (e) {
+            var cursor = e.target.result;
+            if (cursor) {
+                list.push(cursor.value);
+                cursor.continue();
+            }
+        };
+
+        //ready.call(context, element);
 
         //TODO: work out why this hack is required
         element.querySelector('.list').style.height = '900px';

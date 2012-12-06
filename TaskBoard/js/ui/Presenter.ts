@@ -33,5 +33,14 @@ require.define('Presenter', function (require, m, exports) {
         if (options.dataContext) {
             binding.processAll(options.element, options.dataContext);
         }
+
+        var backButton = options.element.querySelector('.win-backbutton');
+
+        if (backButton && history.length > 2) {
+            backButton.removeAttribute('disabled');
+            backButton.addEventListener('click', function () {
+                history.back();
+            }, false);
+        }
     };
 });
