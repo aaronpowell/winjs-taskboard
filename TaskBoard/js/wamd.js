@@ -56,3 +56,4 @@ var require;
     walker('', 'WinJS', global.WinJS);
     walker('', 'Windows', global.Windows);
 })(this);
+//@ sourceMappingURL=wamd.js.map

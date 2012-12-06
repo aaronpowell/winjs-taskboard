@@ -4,6 +4,7 @@ require.define('sammy.winjs', function (require, m, exports) {
     var handlebars = require('handlebars');
     var pages = require('WinJS/UI/Pages');
     var processAll = require('WinJS/UI').processAll;
+    var $ = require('jQuery');
 
     sammy.WinJS = function (app, method_alias = 'template') {
         var template = function (template, data? = {}, name? = template) {
@@ -17,7 +18,22 @@ require.define('sammy.winjs', function (require, m, exports) {
 
             element.innerHTML = rendered;
 
-            processAll(element);
+            processAll(element).then(() => {
+                var forms = element.querySelectorAll('form');
+                var form, method, action;
+                for (var i = 0, il = forms.length; i < il; i += 1) {
+                    form = $(forms[i]);
+                    method = form.data('formMethod');
+                    action = form.data('formAction');
+
+                    form.attr('action', action);
+                    form.attr('method', method);
+
+                    form.find('[data-form-name]').each(function () {
+                        this.name = $(this).data('formName');
+                    });
+                }
+            });
             
             return element.firstChild;
         }

@@ -1,13 +1,12 @@
-﻿/// <reference path="../lib.d.ts" />
-/// <reference path="../winrt.d.ts" />
-/// <reference path="../winjs.d.ts" />
+﻿/// <reference path="../winjs.d.ts" />
 /// <reference path="../wamd.ts" />
 require.define('Presenter', function (require, m, exports) {
-    var binding = require('/js/bindingConverters.js');
+    var bindingConverters = require('/js/bindingConverters.js');
     var ns = require('WinJS/Namespace');
-    ns.define('bindingHelpers', binding);
     var setOptions = require('WinJS/UI').setOptions;
+    var binding = require('WinJS/Binding');
 
+    ns.define('bindingHelpers', bindingConverters);
     var processCommands = function (commands: any[], element: any) {
         var processedCommands = [];
         commands.forEach(cmd => {
@@ -29,6 +28,10 @@ require.define('Presenter', function (require, m, exports) {
             document.getElementById('appbar').winControl.hideCommands(commands.filter(function (cmd) {
                 return cmd.section === 'selection';
             }));
+        }
+
+        if (options.dataContext) {
+            binding.processAll(options.element, options.dataContext);
         }
     };
 });

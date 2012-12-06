@@ -55,6 +55,7 @@
     </AppxManifest>
     <Content Include="App_Readme\Handlebarsjs_LICENSE" />
     <Content Include="App_Readme\Handlebarsjs_README.md" />
+    <Content Include="bin\Debug\AppX\js\wamd.min.js" />
     <Content Include="default.html" />
     <Content Include="images\logo.png" />
     <Content Include="images\smalllogo.png" />
@@ -86,6 +87,7 @@
     <Content Include="pages\item\item.css" />
     <Content Include="pages\item\item.html" />
     <Content Include="pages\item\item.js" />
+    <Content Include="pages\item\item.template" />
     <Content Include="pages\overview\appbar.js" />
     <Content Include="pages\overview\index.css" />
     <Content Include="pages\overview\index.html" />
@@ -99,6 +101,7 @@
     <Content Include="Scripts\sammy-0.7.2.js" />
     <Content Include="Scripts\sammy-plugins\sammy.winjs.js" />
     <Content Include="Scripts\sammy-plugins\sammy.winjs.min.js" />
+    <Content Include="Scripts\sammy-plugins\sammy.winjs.min.js.map" />
     <Content Include="Scripts\sammy-plugins\sammy.winjs.ts" />
     <None Include="TaskBoard_TemporaryKey.pfx" />
   </ItemGroup>

@@ -3,28 +3,29 @@
     <header aria-label="Header content" role="banner">
       <button class="win-backbutton" aria-label="Back" disabled type="button"></button>
       <h1 class="titlearea win-type-ellipsis">
-        <span class="pagetitle">Create Task</span>
+        <span class="pagetitle" data-win-bind="innerHTML: title"></span>
       </h1>
     </header>
     <section aria-label="Main content" role="main">
-      <form>
+      <form data-form-method="post" data-form-action="#/item/edit">
+        <input type="hidden" data-win-bind="value: id" data-form-name="id" />
         <fieldset>
           <legend>Details</legend>
 
           <div>
             <span>Title</span>
-            <input type="text" />
+            <input type="text" data-win-bind="value: title" data-form-name="title" />
           </div>
           <div>
             <span>Description</span>
-            <textarea></textarea>
+            <textarea data-win-bind="value: description" data-form-name="description"></textarea>
           </div>
           <div>
             <span>Due Date</span>
-            <div id="due" data-win-control="WinJS.UI.DatePicker"></div>
+            <div id="due" data-win-control="WinJS.UI.DatePicker" data-win-bind="winControl.current: dueDate"></div>
           </div>
           <div>
-            <div id="completed" data-win-control="WinJS.UI.ToggleSwitch" data-win-options="{title: 'Completed', labelOff: 'Nope', labelOn: 'Yep'}"></div>
+            <div id="completed" data-win-bind="winControl.checked: completed" data-win-control="WinJS.UI.ToggleSwitch" data-win-options="{title: 'Completed', labelOff: 'Nope', labelOn: 'Yep'}"></div>
           </div>
           <div>
             <button>Save</button>

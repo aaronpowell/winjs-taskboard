@@ -6,6 +6,7 @@
 
     require('/pages/overview/index.js');
     require('/pages/create/create.js');
+    require('/pages/item/item.js');
 
     var app = require('app');
 

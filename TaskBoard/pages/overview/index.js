@@ -8,6 +8,10 @@
     var OverviewPageViewModel = function (element) {
         var appBarViewModel = new AppBarViewModel(this, element);
 
+        var presenter = new Presenter({
+            element: element
+        });
+
         ready.call(this, element);
 
         //TODO: work out why this hack is required

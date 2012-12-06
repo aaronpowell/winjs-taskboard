@@ -1,45 +1,45 @@
-﻿require.define('/pages/overview/item.js', function (require, module, exports) {
+﻿require.define('/pages/item/item.js', function (require, module, exports) {
     "use strict";
 
-    var nav = require('WinJS/Navigation');
+    var app = require('app');
 
-    WinJS.UI.Pages.define("/pages/overview/item.html", {
-        ready: function (element, options) {
-            WinJS.Binding.processAll(element, options.item);
+    var Presenter = require('Presenter');
 
-            element.querySelector('#due').winControl.current = new Date(options.item.due);
-            element.querySelector('#completed').winControl.checked = options.item.completed;
+    var ItemPageViewModel = function (element) {
+        var context = this;
+        var db = context.db;
+        var transaction = db.transaction('task');
+        var store = transaction.objectStore('task');
 
-            element.querySelector('form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                var req = indexedDB.open('task-board', 3);
-                req.onsuccess = function (e) {
-                    var db = e.target.result;
-                    var transaction = db.transaction('task', 'readwrite');
-                    var store = transaction.objectStore('task');
+        store.get(parseInt(context.params['id'], 10)).onsuccess = function (e) {
+            var item = e.target.result;
+            item.dueDate = new Date(item.due);
 
-                    var req = store.put({
-                        id: options.item.id,
-                        title: element.querySelector('#title').value,
-                        description: element.querySelector('#desc').value,
-                        due: element.querySelector('#due').winControl.current.getTime(),
-                        completed: element.querySelector('#completed').winControl.checked,
-                        done: element.querySelector('#completed').winControl.checked ? 'yes' : 'no',
-                        created: Date.now()
-                    });
+            var presenter = new Presenter({
+                element: element,
+                dataContext: item
+            });
+        };
+    };
 
-                    req.onsuccess = function (e) {
-                        nav.navigate('/pages/overview/index.html');
-                    };
-                };
-            }, false);
-        },
+    app.get('#/item/:id', '/pages/item/item.template', ItemPageViewModel);
 
-        unload: function () {
-        },
+    app.post('#/item/edit', function (context) {
+        var transaction = this.db.transaction('task', 'readwrite');
+        var store = transaction.objectStore('task');
 
-        updateLayout: function (element, viewState, lastViewState) {
-        }
+        var req = store.put({
+            id: parseInt(context.params['id'], 10),
+            title: context.params['title'],
+            description: context.params['description'],
+            due: context.params['due'].getTime(),
+            completed: context.params['completed'],
+            done: context.params['completed'] ? 'yes' : 'no',
+            updated: Date.now()
+        });
+
+        req.onsuccess = function (e) {
+            context.app.setLocation('#/');
+        };
     });
 });
