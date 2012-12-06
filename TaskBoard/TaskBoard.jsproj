@@ -86,6 +86,7 @@
     <Content Include="pages\item\item.css" />
     <Content Include="pages\item\item.html" />
     <Content Include="pages\item\item.js" />
+    <Content Include="pages\overview\appbar.js" />
     <Content Include="pages\overview\index.css" />
     <Content Include="pages\overview\index.html" />
     <Content Include="pages\overview\index.js" />
