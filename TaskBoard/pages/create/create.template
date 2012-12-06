@@ -7,17 +7,17 @@
       </h1>
     </header>
     <section aria-label="Main content" role="main">
-      <form>
+      <form data-form-method="post" data-form-action="#/create">
         <fieldset>
           <legend>Details</legend>
 
           <div>
             <span>Title</span>
-            <input type="text" />
+            <input type="text" data-form-name="title" />
           </div>
           <div>
             <span>Description</span>
-            <textarea></textarea>
+            <textarea data-form-name="description"></textarea>
           </div>
           <div>
             <span>Due Date</span>
