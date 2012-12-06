@@ -1,27 +1,31 @@
 ﻿require.define('/pages/overview/index.js', function (require, module, exports) {
     "use strict";
-    var nav = require('WinJS/Navigation');
     var binding = require('/js/bindingConverters.js');
     var ns = require('WinJS/Namespace');
+    var setOptions = require('WinJS/UI').setOptions;
+    var List = require('WinJS/Binding/List');
+    var Presenter = require('Presenter');
 
-    ns.define('bindingHelpers', binding);
+    var OverviewPageViewModel = function(context) {
+        var presenter = new Presenter({
+            element: context.$element()
+        });
+
+        ready(presenter.element);
+    };
 
     var commands = [];
 
     var app = require('app');
 
-    app.get('#/', function (context) {
-        context.app.swap('');
+    ns.define('bindingHelpers', binding);
 
-        context.render('/pages/overview/index.template')
-            .appendTo(context.$element())
-            .then(ready.bind(context));
-    });
+    app.get('#/', '/pages/overview/index.template', OverviewPageViewModel);
 
     var ready = function (element) {
         var db = this.db;
         var context = this;
-        var list = new WinJS.Binding.List();
+        var list = new List();
         var now = new Date();
         var groupList = list.createGrouped(
             function (item) {
@@ -47,7 +51,7 @@
             });
 
         var ctrl = element.querySelector('.list');
-        WinJS.UI.setOptions(ctrl.winControl, {
+        setOptions(ctrl.winControl, {
             groupHeaderTemplate: element.querySelector('.headertemplate'),
             itemTemplate: element.querySelector('.itemtemplate'),
             itemDataSource: groupList.dataSource,
@@ -88,7 +92,7 @@
                 var index = e.detail.itemIndex;
                 var item = groupList.getAt(index);
 
-                nav.navigate('/pages/overview/item', { item: item });
+                context.app.setLocation('#/item/' + item.id);
             }
         });
 
@@ -103,97 +107,105 @@
                 cursor.continue();
             }
         };
+        setupCommands(context);
+    };
+
+    var setupCommands = function (context) {
+        var db = context.db;
+
         var cmd = document.getElementById('addCommand').winControl;
-        WinJS.UI.setOptions(cmd, {
+        setOptions(cmd, {
             icon: WinJS.UI.AppBarIcon.add,
             id: 'add',
             label: 'Add',
             onclick: function (e) {
                 e.preventDefault();
-                //nav.navigate('/pages/create/create');
                 context.app.setLocation('#/create');
             }
         });
         commands.push(cmd);
 
         cmd = document.getElementById('deleteCommand').winControl;
-        WinJS.UI.setOptions(cmd, {
+        var deleteHandler = function () {
+            var list = element.querySelector('.list').winControl;
+            var item = list.currentItem;
+            item = list.itemDataSource.list.getAt(item.index);
+
+            var transaction = db.transaction('task', 'readwrite');
+            var store = transaction.objectStore('task');
+
+            store.delete(item.id).onsuccess = function () {
+                list.itemDataSource.remove(list.currentItem.key);
+            };
+        };
+        setOptions(cmd, {
             icon: WinJS.UI.AppBarIcon.delete,
             id: 'delete',
             label: 'Delete',
-            onclick: function () {
-                var list = element.querySelector('.list').winControl;
-                var item = list.currentItem;
-                item = list.itemDataSource.list.getAt(item.index);
-
-                var transaction = db.transaction('task', 'readwrite');
-                var store = transaction.objectStore('task');
-
-                store.delete(item.id).onsuccess = function () {
-                    list.itemDataSource.remove(list.currentItem.key);
-                };
-            }
+            onclick: deleteHandler
         });
         commands.push(cmd);
 
         cmd = document.getElementById('completeCommand').winControl;
-        WinJS.UI.setOptions(cmd, {
+        var completeHandler = function () {
+            var list = element.querySelector('.list').winControl;
+            var item = list.currentItem;
+            item = list.itemDataSource.list.getAt(item.index);
+            item.completed = true;
+            item.done = true;
+
+            var transaction = db.transaction('task', 'readwrite');
+            var store = transaction.objectStore('task');
+
+            store.put(item).onsuccess = function () {
+                list.itemDataSource.remove(list.currentItem.key);
+            };
+        };
+        setOptions(cmd, {
             icon: WinJS.UI.AppBarIcon.accept,
             id: 'complete',
             label: 'Complete',
-            onclick: function () {
-                var list = element.querySelector('.list').winControl;
-                var item = list.currentItem;
-                item = list.itemDataSource.list.getAt(item.index);
-                item.completed = true;
-                item.done = true;
-
-                var transaction = db.transaction('task', 'readwrite');
-                var store = transaction.objectStore('task');
-
-                store.put(item).onsuccess = function () {
-                    list.itemDataSource.remove(list.currentItem.key);
-                };
-            }
+            onclick: completeHandler
         });
         commands.push(cmd);
 
         cmd = document.getElementById('pinCommand').winControl;
-        WinJS.UI.setOptions(cmd, {
+        var pinHandler = function () {
+            var list = element.querySelector('.list').winControl;
+            var item = list.currentItem;
+            item = list.itemDataSource.list.getAt(item.index);
+            if (this.winControl.icon === WinJS.UI.AppBarIcon.pin) {
+                item.pinned = true;
+            } else {
+                item.pinned = false;
+            }
+
+            var transaction = db.transaction('task', 'readwrite');
+            var store = transaction.objectStore('task');
+
+            store.put(item).onsuccess = function () {
+                var tile = new Windows.UI.StartScreen.SecondaryTile('item.' + item.id);
+                if (item.pinned) {
+
+                    tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
+                    tile.backgroundColor = Windows.UI.Colors.darkRed;
+                    tile.shortName = tile.displayName = item.title;
+                    tile.arguments = JSON.stringify({
+                        id: item.id
+                    });
+                    tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
+
+                    tile.requestCreateAsync();
+                } else {
+                    tile.requestDeleteAsync();
+                }
+            };
+        };
+        setOptions(cmd, {
             icon: WinJS.UI.AppBarIcon.pin,
             id: 'pin',
             label: 'Pin',
-            onclick: function () {
-                var list = element.querySelector('.list').winControl;
-                var item = list.currentItem;
-                item = list.itemDataSource.list.getAt(item.index);
-                if (this.winControl.icon === WinJS.UI.AppBarIcon.pin) {
-                    item.pinned = true;
-                } else {
-                    item.pinned = false;
-                }
-
-                var transaction = db.transaction('task', 'readwrite');
-                var store = transaction.objectStore('task');
-
-                store.put(item).onsuccess = function () {
-                    var tile = new Windows.UI.StartScreen.SecondaryTile('item.' + item.id);
-                    if (item.pinned) {
-
-                        tile.foregroundText = Windows.UI.StartScreen.ForegroundText.dark;
-                        tile.backgroundColor = Windows.UI.Colors.darkRed;
-                        tile.shortName = tile.displayName = item.title;
-                        tile.arguments = JSON.stringify({
-                            id: item.id
-                        });
-                        tile.logo = new Windows.Foundation.Uri("ms-appx:///images/logo.png");
-
-                        tile.requestCreateAsync();
-                    } else {
-                        tile.requestDeleteAsync();
-                    }
-                };
-            }
+            onclick: pinHandler
         });
         commands.push(cmd);
 

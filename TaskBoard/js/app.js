@@ -26,7 +26,10 @@ require.define('app', function (require, m, exports) {
                 var _this = this;
                 this.use('WinJS');
                 routes.get.forEach(function (route) {
-                    return _this.get(route.url, route.handler);
+                    _this.get(route.url, function (context) {
+                        context.app.swap('');
+                        context.render(route.template).appendTo(context.$element).then(route.viewModel);
+                    });
                 });
                 aroundHandlers.forEach(function (handler) {
                     return _this.around(handler);
@@ -39,10 +42,11 @@ require.define('app', function (require, m, exports) {
         on: function (type, handler) {
             handlers[type].push(handler);
         },
-        get: function (url, fn) {
+        get: function (url, template, fn) {
             routes.get.push({
                 url: url,
-                handler: fn
+                template: template,
+                viewModel: fn
             });
             return this;
         },

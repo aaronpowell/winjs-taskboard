@@ -37,7 +37,15 @@ require.define('app', function (require, m, exports) {
             var sammy = $.sammy('#contenthost', function () {
                 this.use('WinJS');
 
-                routes.get.forEach(route => this.get(route.url, route.handler));
+                routes.get.forEach(route => {
+                    this.get(route.url, function (context) {
+                        context.app.swap('');
+
+                        context.render(route.template)
+                            .appendTo(context.$element)
+                            .then(route.viewModel);
+                    });
+                });
 
                 aroundHandlers.forEach(handler => this.around(handler));
             });
@@ -47,11 +55,15 @@ require.define('app', function (require, m, exports) {
     };
 
     m.exports = {
-        on: function (type: string, handler: (args) => void) {
+        on: function (type: string, handler: (args) => void ) {
             handlers[type].push(handler);
         },
-        get: function (url: string, fn: (ctx) => void) {
-            routes.get.push({ url: url, handler: fn });
+        get: function (url: string, template: string, fn: (ctx) => void ) {
+            routes.get.push({
+                url: url,
+                template: template,
+                viewModel: fn
+            });
             return this;
         },
         start: function () {
