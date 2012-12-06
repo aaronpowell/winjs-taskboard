@@ -8,12 +8,9 @@
             var item = list.currentItem;
             item = list.itemDataSource.list.getAt(item.index);
 
-            var transaction = db.transaction('task', 'readwrite');
-            var store = transaction.objectStore('task');
-
-            store.delete(item.id).onsuccess = function () {
+            db.task.remove(item.id).done(function () {
                 list.itemDataSource.remove(list.currentItem.key);
-            };
+            });
         };
         var completeHandler = function () {
             var list = element.querySelector('.list').winControl;
@@ -22,12 +19,9 @@
             item.completed = true;
             item.done = true;
 
-            var transaction = db.transaction('task', 'readwrite');
-            var store = transaction.objectStore('task');
-
-            store.put(item).onsuccess = function () {
+            db.task.update(item).done(function() {
                 list.itemDataSource.remove(list.currentItem.key);
-            };
+            });
         };
         var pinHandler = function () {
             var list = element.querySelector('.list').winControl;
